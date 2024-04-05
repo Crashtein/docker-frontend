@@ -9,16 +9,14 @@ pipeline {
     agent {
         label 'agent'
     }
-
+    environment {
+        scannerHome = tool 'SonarQube'
+        PIP_BREAK_SYSTEM_PACKAGES = 1
+    }
     stages {
-        stage('Hello') {
-            steps {
-                echo 'Hello World'
-            }
-        }
         stage('Get code') {
             steps {
-                git branch: 'main', url: 'https://github.com/Crashtein/docker-frontend.git'
+		checkout scm
             }
         }
         stage('Unit tests') {
@@ -67,7 +65,6 @@ pipeline {
             cleanWs()
         success {
             build job: 'app_of_apps', parameters: [ string(name: 'frontendDockerTag', value: "$dockerTag")], wait: false
-        }
         }
     }
 }
